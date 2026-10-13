@@ -9,6 +9,8 @@
  *   playTTS(uiAudio("太棒了！"));
  */
 
+import { assetUrl } from "@/lib/assetUrl";
+
 const UI_AUDIO_MAP: Record<string, string> = {
   "太棒了！": "/audio/62/629784182421fb47b5d1eedd59e643c2e2a1102e.opus",
   "完美！": "/audio/7f/7f7cb35ef89ba028f36eea59663dfbbe1eefeca1.opus",
@@ -52,5 +54,6 @@ const UI_AUDIO_MAP: Record<string, string> = {
 
 /** 查找 UI 短句的预生成 TTS 音频路径。找不到返回 undefined。 */
 export function uiAudio(text: string): string | undefined {
-  return UI_AUDIO_MAP[text];
+  const path = UI_AUDIO_MAP[text];
+  return path ? assetUrl(path) : undefined;
 }

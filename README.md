@@ -216,6 +216,33 @@ python scripts/tts/api_tts.py
 cd apps/web && npx tsx scripts/build-data.ts
 ```
 
+## ☁️ Cloudflare 部署
+
+Web 端使用 Next.js 静态导出。Cloudflare Pages 托管页面，R2 托管音频、课本页和故事配图，避免 Pages 免费版的静态文件数限制。
+
+首次准备媒体资源并上传到 R2：
+
+```bash
+bash scripts/download-assets.sh v1.2.0-assets
+```
+
+创建一个 R2 API Token（Object Read & Write），设置 `CF_ACCOUNT_ID`、`CF_R2_BUCKET`、`AWS_ACCESS_KEY_ID` 和 `AWS_SECRET_ACCESS_KEY` 环境变量，然后执行：
+
+```bash
+bash scripts/upload-cloudflare-assets.sh
+```
+
+Cloudflare Pages 项目配置：根目录为仓库根目录，构建命令为 `npm ci && npm run build:cloudflare`，输出目录为 `apps/web/out`。将 `NEXT_PUBLIC_ASSET_BASE_URL` 设置为 R2 自定义域名（例如 `https://assets.example.com`）。构建脚本下载并校验固定版本的静态数据、重写媒体 URL，并从 Pages 产物中移除 R2 媒体文件。
+
+也可以在本地生成 Pages 产物并直接上传：
+
+```bash
+NEXT_PUBLIC_ASSET_BASE_URL=https://assets.example.com npm run build:cloudflare
+npx wrangler pages deploy apps/web/out --project-name=china-study-free
+```
+
+首次直接上传需要先在 Wrangler CLI 登录 Cloudflare。之后重新部署时，重复构建和 `wrangler pages deploy` 即可。
+
 ---
 
 ## 🏗️ 项目结构

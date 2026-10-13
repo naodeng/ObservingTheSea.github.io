@@ -29,6 +29,7 @@ import type {
   StoryQuestion,
   BookStories,
 } from "../src/types/index.js";
+import { assetUrl } from "../src/lib/assetUrl.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -94,7 +95,7 @@ function audioFor(text: string | undefined | null): string | undefined {
   const norm = normalizeText(text);
   if (!norm) return undefined;
   const rel = audioRel(norm);
-  if (audioIndex && audioIndex.has(rel)) return `/audio/${rel}`;
+  if (audioIndex && audioIndex.has(rel)) return assetUrl(`/audio/${rel}`);
   return undefined;
 }
 
@@ -285,8 +286,8 @@ async function buildPassages(): Promise<Set<string>> {
 
       const enriched: Passage[] = doc.passages.map(p => {
         const info = pagesMap.get(p.id) ?? { pdfPage: null, pages: [] };
-        const pageImages = info.pages.map(
-          n => `/textbook-pages/${bookId}/p${n}.jpg`,
+        const pageImages = info.pages.map(n =>
+          assetUrl(`/textbook-pages/${bookId}/p${n}.jpg`),
         );
         if (pageImages.length > 0) passageWithImage++;
         return {
@@ -424,7 +425,9 @@ async function buildStories(): Promise<Set<string>> {
 
         // check for story image
         const imgPath = path.join(STORY_IMAGES_ROOT, bookId, `${s.id}.jpg`);
-        const image = existsSync(imgPath) ? `/story-images/${bookId}/${s.id}.jpg` : undefined;
+        const image = existsSync(imgPath)
+          ? assetUrl(`/story-images/${bookId}/${s.id}.jpg`)
+          : undefined;
 
         return {
           id: s.id,

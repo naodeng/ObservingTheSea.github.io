@@ -1,0 +1,3 @@
+name = "china-study-free"
+pages_build_output_dir = "./apps/web/out"
+compatibility_date = "2026-10-13"
